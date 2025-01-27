@@ -1,0 +1,37 @@
+#Mari Karp
+def gaussian_elimination(matrix):
+    n = len(matrix)
+    for i in range(n):
+        for k in range(i + 1, n):
+            #Reducing the variable to zero
+            coefficient = matrix[k][i] / matrix[i][i]
+            for j in range(i, n + 1):
+                #Reducing the matrix[k][i] to zero
+                matrix[k][j] -= coefficient * matrix[i][j]
+    #List with results
+    result = [0] * n
+    #Back-substitution
+    #Calculating the value of a variable x[i]
+    for i in range(n - 1, -1, -1):
+        result[i] = matrix[i][n] / matrix[i][i]
+        for k in range(i + 1, n):
+            result[i] -= (matrix[i][k] / matrix[i][i]) * result[k]
+
+    return result
+
+n = int(input("Number of equations: "))
+
+matrix = []
+
+for i in range(n):
+    row = list(map(float, input(f"Enter equation {i + 1}(coefficients and constant (with spaces)): ").split()))
+    matrix.append(row)
+
+result = gaussian_elimination(matrix)
+    
+print("Result:")
+for i in range(n):
+    #I could always write x= y= z= as a result, but since we have a number of equations entered from the console, I presented them simply as x[1]
+    print(f"x[{i}] = {result[i]}")
+
+#while writing, I had to ask for a little help my tutor who prepared me for an exam (ЕГЭ), because I completely forgot how to work with lists in Python;(
