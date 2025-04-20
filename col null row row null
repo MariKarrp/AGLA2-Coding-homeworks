@@ -1,0 +1,68 @@
+import numpy as np
+from fractions import Fraction
+def print_basis(basis, name):
+    print(f"\n{name}")
+    for i, vec in enumerate(basis, 1):
+        #the printed spaces are a bit not in this apperance that you might imagined, but i did it late at night, sorry
+        print(f"vector {i}:", " ".join(str(Fraction(x).limit_denominator()) for x in vec))
+def RREF(A):
+    A = np.array(A, dtype=float)
+    rows, cols = A.shape
+    r = 0
+    pivots = []
+    for c in range(cols):
+        pivot = np.argmax(np.abs(A[r:, c])) + r
+        if np.abs(A[pivot, c]) < 1e-10:
+            continue
+        A[[r, pivot]] = A[[pivot, r]]
+        pivots.append((r, c))
+        A[r] = A[r] / A[r, c]
+        for i in range(rows):
+            if i != r and A[i, c] != 0:
+                A[i] = A[i] - A[i, c] * A[r]
+        r += 1
+        if r == rows:
+            break
+    return A, pivots
+def column_space(A):
+    RREF_A, pivots = RREF(A)
+    basis = [A[:, c] for r, c in pivots]
+    return basis
+def row_space(A):
+    RREF_A, pivots = RREF(A)
+    basis = [RREF_A[r] for r, c in pivots]
+    return basis
+def null_space(A):
+    RREF_A, pivots = RREF(A)
+    rows, cols = A.shape
+    pivot_cols = {c for r, c in pivots}
+    free_cols = [c for c in range(cols) if c not in pivot_cols]
+    basis = []
+    for free in free_cols:
+        vec = np.zeros(cols)
+        vec[free] = 1
+        for r, c in pivots:
+            if c < free:
+                vec[c] = -RREF_A[r, free]
+        basis.append(vec)
+    return basis
+def left_null_space(A):
+    return null_space(A.T)
+
+
+m = 3
+n = 3
+print(f"Enter matrix {m}x{n} (with space)")
+A = []
+for _ in range(m):
+    row = list(map(float, input().split()))
+    A.append(row)
+A = np.array(A)
+cs = column_space(A)
+rs = row_space(A)
+ns = null_space(A)
+lns = left_null_space(A)
+print_basis(cs, "Column space")
+print_basis(rs, "Row space")
+print_basis(ns, "Null space")
+print_basis(lns, "Row null space")
