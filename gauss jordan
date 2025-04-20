@@ -1,0 +1,31 @@
+#site "geekforgeeks" helped me to do it 
+import numpy as np
+def input_matrix():
+    print("Size of a matrix (n):")
+    n = int(input())    
+    print(f"Enter matrix {n}x{n} (with spaces):")
+    matrix = []
+    for _ in range(n):
+        row = list(map(float, input().split()))
+        matrix.append(row)
+    return np.array(matrix)
+def inverse_matrix_gauss_jordan(A, epsilon=1e-10):
+    n = A.shape[0]
+    augmented = np.hstack((A.astype(float), np.identity(n)))
+    for col in range(n):
+        max_row = np.argmax(np.abs(augmented[col:, col])) + col
+        if max_row != col:
+            augmented[[col, max_row]] = augmented[[max_row, col]]
+        augmented[col] = augmented[col] / augmented[col, col]
+        for row in range(n):
+            if row != col and augmented[row, col] != 0:
+                augmented[row] -= augmented[col] * augmented[row, col]
+    A_inv = augmented[:, n:]    
+    return A_inv
+
+A = input_matrix()
+A_inv = inverse_matrix_gauss_jordan(A)
+if A_inv is not None:
+    print("\nResult:")
+    print(A_inv)
+    print(np.round(np.dot(A, A_inv), 8))
