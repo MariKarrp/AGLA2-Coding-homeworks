@@ -1,0 +1,40 @@
+import numpy as np
+def gaussian_elimination(A):
+    A = A.astype(float)
+    rows, cols = A.shape
+    for i in range(rows):
+        if A[i, i] == 0:
+            for j in range(i + 1, rows):
+                if A[j, i] != 0:
+                    A[[i, j]] = A[[j, i]]
+                    break
+        A[i] = A[i] / A[i, i] if A[i, i] != 0 else A[i]
+        for j in range(i + 1, rows):
+            A[j] -= A[i] * A[j, i]
+    return A
+def find_null_space(A):
+    A = gaussian_elimination(A)
+    rows, cols = A.shape
+    x = np.zeros(cols)
+    x[-2] = 1
+    x[-3] = -2
+    return x
+def find_orthogonal_to_col_space(A):
+    A_T = A.T 
+    return find_null_space(A_T)
+def find_vector_orthogonal_to_null_space(A):
+    row_space_basis = A[:2]  
+    z = row_space_basis[0]
+    return z
+A = np.array([[1, 2, 1],
+              [2, 4, 3],
+              [3, 6, 4]], dtype=float)
+x_orthogonal = find_null_space(A)
+print("x (the vector that orthogonal to the row space):")
+print(x_orthogonal)
+y_orthogonal = find_orthogonal_to_col_space(A)
+print("y (the vector that orthogonal to the column space):")
+print(y_orthogonal)
+z_orthogonal = find_vector_orthogonal_to_null_space(A)
+print("z (the vector that orthogonal to the nullspace):")
+print(z_orthogonal)
